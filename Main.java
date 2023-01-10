@@ -134,6 +134,7 @@ class Main {
             
             t.quickSort(ark, 0, count-1);
             removeDupes(ark, count);
+            in.close();
         } catch(Exception e) {
             t.pl("" + e);
         }
@@ -152,21 +153,18 @@ class Main {
         
         String filename = t.askForString("\nEnter the name of the file (e.g. animals.txt) >");
         
-        t.quickSort(ark, 0, animalCount);
+        t.quickSort(ark, 0, animalCount-1);
         
         try{
             FileWriter out = new FileWriter(filename);
-            for (int i = 0; i < ark.length; i++) {
-                if(ark[i] == null) {
-                    break;
-                }
-                
+            for (int i = 0; i < animalCount; i++) {
                 out.write(ark[i] + "\n");
             }
+            
+            out.close();
         } catch (Exception e) {
             t.pl(e + "");
         }
-        
     }
     
     /**
