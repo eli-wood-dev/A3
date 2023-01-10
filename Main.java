@@ -44,7 +44,8 @@ class Main {
             }
             
             if (option.equals("0")) {
-                animalCount = loadArkFromFile(ark, animalCount);
+                ark = loadArkFromFile(ark, animalCount, maxAnimals);
+                animalCount = numAnimals(ark);
             }
             
             if (option.equals("1")) {
@@ -52,11 +53,13 @@ class Main {
             }
             
             if ( option.equals("2")) {
-                animalCount = addAnimal(ark, animalCount);
+                ark = addAnimal(ark, animalCount, maxAnimals);
+                animalCount += 1;
             }
             
             if ( option.equals("3")) {
-                animalCount = deleteAnimal(ark, animalCount);
+                ark = deleteAnimal(ark, animalCount);
+                animalCount -= 1;
             }
             
             if ( option.equals("4")) {
@@ -80,7 +83,7 @@ class Main {
      * @author Eli Wood
      * @version v100
      */
-    public static int loadArkFromFile(String[] ark, int animalCount) {
+    public static String[] loadArkFromFile(String[] ark, int animalCount, int maxAnimals) {
         Tools t = new Tools();
         
         String filename;
@@ -98,14 +101,16 @@ class Main {
             int count = 0;
             while(in.hasNextLine()) {
                 ark[count] = in.nextLine().toLowerCase();
+                count++;
             }
             
-            t.quickSort(ark, 0, count);
+            t.quickSort(ark, 0, count-1);
+            removeDupes(ark, count);
         } catch(Exception e) {
             t.pl("" + e);
         }
         
-        return animalCount;
+        return ark;
     }
     
     /**
@@ -142,13 +147,21 @@ class Main {
      * @author Eli Wood
      * @version v100
      */
-    public static int addAnimal(String[] ark, int animalCount) {
+    public static String[] addAnimal(String[] ark, int animalCount, int maxSize) {
         Tools t = new Tools();
         
         String animal;
         
         animal = t.askForString("\nAdd animal >");
-        return animalCount;
+        
+        if(animalCount >= maxSize) {
+            t.pl("The ark is already full");
+        } else {
+            ark[animalCount] = animal;
+            t.quickSort(ark, 0, animalCount);
+        }
+        
+        return ark;
     }
     
     /**
@@ -157,7 +170,7 @@ class Main {
      * @author Eli Wood
      * @version v100
      */
-    public static int deleteAnimal(String[] ark, int animalCount) {
+    public static String[] deleteAnimal(String[] ark, int animalCount) {
         Tools t = new Tools();
         
         String animal;
@@ -165,10 +178,12 @@ class Main {
         animal = t.askForString("\nRemove which animal >");
         if(hasAnimal(ark, animalCount, animal)) {
             ark = delete(ark, animalCount, animal, false);
-            animalCount -= 1;
+            t.pl(animal + " has been removed");
+        } else {
+            t.pl("That animal was not on the ark");
         }
         
-        return animalCount;
+        return ark;
     }
     
     /**
@@ -256,6 +271,7 @@ class Main {
             }
             t.p(ark[i] + " ");
         }
+        t.pl("\n");
     }
     
     /**
@@ -279,6 +295,8 @@ class Main {
         for(int i = 0; i < arr.length; i++) {
             if(arr[i] != null) {
                 count++;
+            } else {
+                break;
             }
         }
         return count;
