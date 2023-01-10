@@ -1,7 +1,9 @@
 import java.util.Scanner;
 import java.io.*;
 import Tools.*;
-
+import java.awt.Desktop;
+import java.net.URI;
+import java.util.Random;
 /**
  * The Lunar Ark Program
  *
@@ -55,6 +57,10 @@ class Main {
             if ( option.equals("2")) {
                 ark = addAnimal(ark, animalCount, maxAnimals);
                 animalCount += 1;
+                if(checkDupes(ark, animalCount)) {
+                    removeDupes(ark, animalCount);
+                    animalCount -= 1;
+                }
             }
             
             if ( option.equals("3")) {
@@ -100,8 +106,13 @@ class Main {
             
             int count = 0;
             while(in.hasNextLine()) {
-                ark[count] = in.nextLine().toLowerCase();
-                count++;
+                if(count < maxAnimals) {
+                    ark[count] = in.nextLine().toLowerCase();
+                    count++;
+                } else {
+                    t.pl("The ark is full");
+                    break;
+                }
             }
             
             t.quickSort(ark, 0, count-1);
@@ -157,7 +168,7 @@ class Main {
         if(animalCount >= maxSize) {
             t.pl("The ark is already full");
         } else {
-            ark[animalCount] = animal;
+            ark[animalCount] = animal.toLowerCase();
             t.quickSort(ark, 0, animalCount);
         }
         
@@ -208,6 +219,12 @@ class Main {
         return arr;
     }
     
+    /**
+     * removes all duplicate animals
+     * 
+     * @author Eli Wood
+     * @version v100
+     */
     public static String[] removeDupes(String[] arr, int count) {
         for(int i = 0; i < count-1; i++) {
             if(arr[i] == arr[i+1]) {
@@ -217,6 +234,22 @@ class Main {
         }
         
         return arr;
+    }
+    
+    /**
+     * Checks to see if there are any duplicates
+     * 
+     * @author Eli Wood
+     * @version v100
+     */
+    public static boolean checkDupes(String[] arr, int count) {
+        for(int i = 0; i < count-1; i++) {
+            if(arr[i] == arr[i+1]) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     /**
@@ -275,13 +308,77 @@ class Main {
     }
     
     /**
-     * updates the html word cloud
+     * updates and opens the html word cloud
      * 
      * @author Eli Wood
      * @version v100
      */
     public static void writeHTMLFile(String[] ark, int animalCount) {
+        Tools t = new Tools();
+        try{
+            FileWriter out = new FileWriter("cloud.html");
+            
+            out.write(opening());
+            
+            for(int i = 0; i < animalCount; i++) {
+                out.write("   <li><a data-weight=\"" + random() + "\" href=\"#\">" + ark[i] + "</a></li>\n");
+            }
+            
+            out.write(ending());
+            
+            try {
+                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                    try {
+                        Desktop.getDesktop().browse(new URI("cloud.html"));
+                    }
+                    catch (Exception g){
+                        t.pl(g + "");
+                    }
+                }
+            } catch (Exception f){
+                t.pl(f + "");
+            }
+        } catch(Exception e) {
+            t.pl(e + "");
+        }
+    }
+    
+    /**
+     * gives a random int between 1 and 7
+     */
+    public static int random() {
+        Random r = new Random();
+        int num = r.nextInt(7) + 1;
         
+        return num;
+    }
+    
+    /**
+     * writes the opening to the html file
+     * 
+     * @author Eli Wood
+     * @version v100
+     */
+    public static String opening() {
+        String opening = new String();
+        
+        opening = "<!DOCTYPE html>\n<html>\n <head>\n   <link rel=\"stylesheet\" href=\"cloud.css\">\n </head>\n <body>\n   <ul class=\"cloud\">\n";
+        
+        return opening;
+    }
+    
+    /**
+     * writes the closing to the html file
+     * 
+     * @author Eli Wood
+     * @version v100
+     */
+    public static String ending() {
+        String ending = new String();
+        
+        ending = "   </ul>\n </body>\n</html>";
+        
+        return ending;
     }
     
     /**
