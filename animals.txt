@@ -1,0 +1,8 @@
+cat
+chicken
+cow
+dog
+dolphin
+gorilla
+horse
+monkey

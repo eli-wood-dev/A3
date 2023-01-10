@@ -308,6 +308,8 @@ class Main {
             } catch (Exception f){
                 t.pl(f + "");
             }
+            
+            out.close();
         } catch(Exception e) {
             t.pl(e + "");
         }
