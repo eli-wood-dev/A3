@@ -55,18 +55,29 @@ class Main {
             }
             
             if ( option.equals("2")) {
-                ark = addAnimal(ark, animalCount, maxAnimals);
-                animalCount += 1;
+                String target = t.askForString("\nAdd animal >");
+        
+                if(animalCount >= maxAnimals) {
+                    t.pl("The ark is already full");
+                } else {
+                    ark[animalCount] = target.toLowerCase();
+                    t.quickSort(ark, 0, animalCount);
+                    animalCount++;
+                }
+                
                 if(checkDupes(ark, animalCount)) {
-                    removeDupes(ark, animalCount);
-                    animalCount -= 1;
+                    ark = removeDupes(ark, animalCount);
+                    animalCount --;
+                    t.pl(target + " was already on the ark");
+                } else {
+                    t.pl(target + " has been added");
                 }
             }
             
             if ( option.equals("3")) {
                 String target = t.askForString("\nRemove which animal >");
                 if(hasAnimal(ark, animalCount, target)) {
-                    ark = delete(ark, animalCount, target, false);
+                    ark = delete(ark, animalCount, target);
                     t.pl(target + " has been removed");
                     animalCount--;
                 } else {
@@ -159,46 +170,18 @@ class Main {
     }
     
     /**
-     * adds an animal to the array
-     * 
-     * @author Eli Wood
-     * @version v100
-     */
-    public static String[] addAnimal(String[] ark, int animalCount, int maxSize) {
-        Tools t = new Tools();
-        
-        String animal;
-        
-        animal = t.askForString("\nAdd animal >");
-        
-        if(animalCount >= maxSize) {
-            t.pl("The ark is already full");
-        } else {
-            ark[animalCount] = animal.toLowerCase();
-            t.quickSort(ark, 0, animalCount);
-            t.pl(animal + " has been added");
-        }
-        
-        return ark;
-    }
-    
-    /**
      * deletes an animal and adjusts the rest of the array
      * 
      * @author Eli Wood
      * @version v100
      */
-    public static String[] delete(String[] arr, int count, String target, boolean repeat) {
+    public static String[] delete(String[] arr, int count, String target) {
         for(int i = 0; i < count; i++) {
             if(arr[i].equalsIgnoreCase(target)) {
                 for(int j = i+1; j < count-1; j++) {
                     arr[j-1] = arr[j];
                 }
-                
-                if(repeat = false) {
-                    break;
-                }
-                i -= 1;
+                return arr;
             }
         }
         return arr;
@@ -212,9 +195,10 @@ class Main {
      */
     public static String[] removeDupes(String[] arr, int count) {
         for(int i = 0; i < count-1; i++) {
-            if(arr[i] == arr[i+1]) {
-                delete(arr, count, arr[i], false);
+            if(arr[i].equalsIgnoreCase(arr[i+1])) {
+                delete(arr, count, arr[i]);
                 i-= 1;
+                count -= 1;
             }
         }
         
@@ -228,8 +212,11 @@ class Main {
      * @version v100
      */
     public static boolean checkDupes(String[] arr, int count) {
+        Tools t = new Tools();
+        
+        t.quickSort(arr, 0, count-1);
         for(int i = 0; i < count-1; i++) {
-            if(arr[i] == arr[i+1]) {
+            if(arr[i].equalsIgnoreCase(arr[i+1])) {
                 return true;
             }
         }
