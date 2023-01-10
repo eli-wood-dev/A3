@@ -64,8 +64,14 @@ class Main {
             }
             
             if ( option.equals("3")) {
-                ark = deleteAnimal(ark, animalCount);
-                animalCount -= 1;
+                String target = t.askForString("\nRemove which animal >");
+                if(hasAnimal(ark, animalCount, target)) {
+                    ark = delete(ark, animalCount, target, false);
+                    t.pl(target + " has been removed");
+                    animalCount--;
+                } else {
+                    t.pl("That animal was not on the ark");
+                }
             }
             
             if ( option.equals("4")) {
@@ -170,35 +176,14 @@ class Main {
         } else {
             ark[animalCount] = animal.toLowerCase();
             t.quickSort(ark, 0, animalCount);
+            t.pl(animal + " has been added");
         }
         
         return ark;
     }
     
     /**
-     * removes an animal from the array
-     * 
-     * @author Eli Wood
-     * @version v100
-     */
-    public static String[] deleteAnimal(String[] ark, int animalCount) {
-        Tools t = new Tools();
-        
-        String animal;
-        
-        animal = t.askForString("\nRemove which animal >");
-        if(hasAnimal(ark, animalCount, animal)) {
-            ark = delete(ark, animalCount, animal, false);
-            t.pl(animal + " has been removed");
-        } else {
-            t.pl("That animal was not on the ark");
-        }
-        
-        return ark;
-    }
-    
-    /**
-     * helper method to deleteAnimal
+     * deletes an animal and adjusts the rest of the array
      * 
      * @author Eli Wood
      * @version v100
